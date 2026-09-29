@@ -11,11 +11,9 @@ from statistics import mean
 # Configuration
 # ======================================================
 
-# Target URLs for the traffic generator
+# Target URLs for the traffic generator (Routed through NGINX Load Balancer)
 TARGET_URLS = [
-    "http://localhost:8001/process",
-    "http://localhost:8002/process",
-    "http://localhost:8003/process",
+    "http://localhost:8080/process",
 ]
 
 
@@ -174,8 +172,11 @@ async def generate_load(rps):
     # Create a new instance of MetricsCollector to track the metrics for this burst of traffic.
     metrics = MetricsCollector()
 
+    # Use TCPConnector with an increased connection limit to prevent socket exhaustion during high bursts
+    connector = aiohttp.TCPConnector(limit=1000)
+
     # Use an asynchronous context manager to create a new aiohttp ClientSession for sending HTTP requests.
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(connector=connector) as session:
 
         tasks = []
         # Loop through the number of requests to be sent in this burst, creating a task for each request.
@@ -271,6 +272,8 @@ async def run_simulation():
         if elapsed > SIMULATION_DURATION:
             break
 
+        step_start = time.time()
+
         rps = model.generate_rps() # Generate the current requests per second (RPS) value based on the traffic model, which incorporates a sine wave pattern, random noise, and occasional spikes.
 
         metrics = await generate_load(rps) # Generate a burst of traffic by sending the specified number of requests concurrently and collect the resulting metrics.
@@ -285,9 +288,10 @@ async def run_simulation():
             f"Success={summary['success_rate']}%"
         )
 
-        await asyncio.sleep(
-            INTERVAL_SECONDS
-        )
+        # Pacing step: ensure loop step aligns with INTERVAL_SECONDS interval
+        step_duration = time.time() - step_start
+        if step_duration < INTERVAL_SECONDS:
+            await asyncio.sleep(INTERVAL_SECONDS - step_duration)
 
     print("Simulation Complete")
 

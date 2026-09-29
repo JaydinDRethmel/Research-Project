@@ -11,7 +11,7 @@
 ## Tech Stack
 
 * **ML / Optimization:** PyTorch, NumPy, SciPy
-* **Cloud & Containers:** Docker, FastAPI, Prometheus, Grafana
+* **Cloud & Containers:** Docker, NGINX, FastAPI, Prometheus, Grafana
 * **Traffic Testing:** Custom Python async traffic generator
 
 ---
