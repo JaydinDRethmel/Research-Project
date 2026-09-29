@@ -1,0 +1,13 @@
+# Prometheus configuration file
+global:
+  scrape_interval: 1s # Set the scrape interval to every 1 second.
+
+# Scrape configuration for Prometheus to scrape metrics from the FastAPI application running on port 8000.
+scrape_configs:
+  - job_name: 'fastapi_app' # Name of the job for identification in Prometheus.
+    # Use DNS service discovery to find the FastAPI application instances.
+    dns_sd_configs:
+      - names:
+          - 'app'
+        type: 'A'
+        port: 8000
