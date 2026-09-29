@@ -42,7 +42,10 @@ Implementation of Online Convex Optimization to correct the baseline scheduler's
 * **Algorithm:** Implement OGD (Online Gradient Descent) to adjust resource allocations dynamically:
   $$x_{t+1} = \Pi_{x}(x_{t} - \eta \nabla f_{t}(x_{t}))$$
 * **Loss Function $f_{t}(x_{t})$:** Define a convex cost function balancing SLA penalty and resource overhead:
-  $$f_{t}(x_{t}) = C_{\text{sla}} \cdot \max(0, \text{Latency}_{t} - \text{SLA}_{\text{tar}}) + C_{\text{resource}} \cdot x_{t}$$
+ ```math
+  f_{t}(x_{t}) = C_{\text{sla}} \cdot \max(0, \text{Latency}_{t} - \text{SLA}_{\text{tar}}) + C_{\text{resource}} \cdot x_{t}
+  ```
+
   *Where $x_{t}$ represents added capacity and $\eta$ is the learning rate.*
 * **Execution:** Run the OGD loop every second. If actual traffic exceeds the LSTM prediction, OGD quickly scales up resources before SLA violations compound.
 
