@@ -11,8 +11,8 @@ REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method',
 LATENCY = Histogram('http_request_duration_seconds', 'HTTp request duration in seconds', ['endpoint'])
 
 # Define a sample endpoint
-@app.get("/")
-def read_root():
+@app.get("/process")
+def process_request():
     start_time = time.time() # Start measuring time
 
     _ = [math.sin(i) for i in range(10_000)] # Simulate some processing
